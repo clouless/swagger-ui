@@ -92,6 +92,7 @@ export default class Response extends React.Component {
     let links = response.get("links")
     const Headers = getComponent("headers")
     const HighlightCode = getComponent("highlightCode")
+    const HighlightCodeRemote = getComponent("highlightCodeRemote")
     const ModelExample = getComponent("modelExample")
     const Markdown = getComponent( "Markdown" )
     const OperationLink = getComponent("operationLink")
@@ -140,8 +141,8 @@ export default class Response extends React.Component {
         sampleResponse = response.getIn(["examples", activeContentType])
       } else {
         sampleResponse = schema ? getSampleSchema(
-          schema.toJS(), 
-          activeContentType, 
+          schema.toJS(),
+          activeContentType,
           {
             includeReadOnly: true,
             includeWriteOnly: true // writeOnly has no filtering effect in swagger 2.0
@@ -151,6 +152,12 @@ export default class Response extends React.Component {
     }
 
     let example = getExampleComponent( sampleResponse, HighlightCode )
+
+    // Goal: either show value or externalValue for examplesForMediaType
+    let selectedExampleForMediaType = null
+    if (examplesForMediaType) {
+      selectedExampleForMediaType = examplesForMediaType.get(this.getTargetExamplesKey(), Map({}))
+    }
 
     return (
       <tr className={ "response " + ( className || "") } data-code={code}>
@@ -211,7 +218,7 @@ export default class Response extends React.Component {
             </section>
           ) : null}
 
-          { example || schema ? (
+          { !selectedExampleForMediaType && (example || schema) ? (
             <ModelExample
               specPath={specPathWithPossibleSchema}
               getComponent={ getComponent }
@@ -221,12 +228,18 @@ export default class Response extends React.Component {
               example={ example }/>
           ) : null }
 
-          { isOAS3 && examplesForMediaType ? (
-              <Example
-                example={examplesForMediaType.get(this.getTargetExamplesKey(), Map({}))}
-                getComponent={getComponent}
-                omitValue={true}
-              />
+          { isOAS3 && selectedExampleForMediaType ? (
+            <ModelExample
+              specPath={specPathWithPossibleSchema}
+              getComponent={ getComponent }
+              getConfigs={ getConfigs }
+              specSelectors={ specSelectors }
+              schema={ fromJSOrdered(schema) }
+              example={selectedExampleForMediaType.has("externalValue") ?
+                <HighlightCodeRemote url={selectedExampleForMediaType.get("externalValue")} HighlightCode={HighlightCode} />
+                :
+                <HighlightCode value={selectedExampleForMediaType.get("value")} />
+              } />
           ) : null}
 
           { headers ? (

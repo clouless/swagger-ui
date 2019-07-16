@@ -41,6 +41,7 @@ import OperationSummaryPath from "core/components/operation-summary-path"
 import OperationExt from "core/components/operation-extensions"
 import OperationExtRow from "core/components/operation-extension-row"
 import HighlightCode from "core/components/highlight-code"
+import HighlightCodeRemote from "core/components/highlight-code-remote"
 import Responses from "core/components/responses"
 import Response from "core/components/response"
 import ResponseBody from "core/components/response-body"
@@ -115,6 +116,7 @@ export default function() {
       OperationSummaryMethod,
       OperationSummaryPath,
       highlightCode: HighlightCode,
+      highlightCodeRemote: HighlightCodeRemote,
       responses: Responses,
       response: Response,
       responseBody: ResponseBody,
