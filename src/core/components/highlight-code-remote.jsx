@@ -19,8 +19,10 @@ export default class HighlightCodeRemote extends Component {
     this.loadExternalValue()
   }
 
-  componentDidUpdate() {
-    this.loadExternalValue()
+  componentDidUpdate(prevProps, prevState) {
+    if (prevProps.url !== this.props.url) {
+      this.loadExternalValue()
+    }
   }
 
   loadExternalValue() {
